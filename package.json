@@ -16,7 +16,7 @@
     "chatbot",
     "webhook"
   ],
-  "author": "Worachet Uttha",
+  "author": "Ratchanon Leechareon",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
