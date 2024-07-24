@@ -9,11 +9,10 @@ const app = express();
 //middleware
 app.use(bodyParser.json());
 
-//function test(req,res){
-//}(แบบเก่า)
 app.get("/", (req, res) => {
-  res.send("<h1> welcome, this is a webhook for Line chatbot</h1>");
+  res.send("<h1>Welcome, this is a webhook for Line Chatbot !!!</h1>");
 });
+
 app.post("/webhook", (req, res) => {
   //create webhook client
   const agent = new WebhookClient({
@@ -21,8 +20,10 @@ app.post("/webhook", (req, res) => {
     response: res,
   });
 
-  console.log("Dialogflow Request headers: " + JSON.stringify(req.headers));
-  console.log("Dialogflow Request body: " + JSON.stringify(req.body));
+  // console.log(
+  //     "Dialogflow Request headers: " + JSON.stringify(req.headers)
+  // );
+  // console.log("Dialogflow Request body: " + JSON.stringify(req.body));
 
   function welcome(agent) {
     agent.add(`Welcome to my agent!`);
@@ -56,18 +57,7 @@ app.post("/webhook", (req, res) => {
       altText: "Flex Message",
       contents: {
         type: "bubble",
-        hero: {
-          type: "image",
-          url: "https://img.kapook.com/u/2024/wanwanat/bmi.jpg",
-          size: "full",
-          aspectRatio: "20:13",
-          aspectMode: "cover",
-          action: {
-            type: "uri",
-            uri: "https://line.me/",
-          },
-        },
-        body: {
+        header: {
           type: "box",
           layout: "vertical",
           contents: [
@@ -75,142 +65,94 @@ app.post("/webhook", (req, res) => {
               type: "text",
               text: "BMI Calculation Result",
               weight: "bold",
-              size: "xl",
+              size: "lg",
+              align: "center",
             },
+          ],
+        },
+        hero: {
+          type: "image",
+          url: "https://lirp.cdn-website.com/69c0b277/dms3rep/multi/opt/BMI+levels-1920w.jpg",
+          size: "full",
+          aspectRatio: "20:13",
+          aspectMode: "cover",
+        },
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
             {
-              type: "box",
-              layout: "baseline",
+              type: "text",
+              text: "Your BMI Result",
+              weight: "bold",
+              size: "md",
               margin: "md",
-              contents: [],
             },
             {
-              type: "box",
-              layout: "vertical",
+              type: "text",
+              text: "Height: " + height * 100 + " cm",
+              size: "sm",
+              margin: "sm",
+            },
+            {
+              type: "text",
+              text: "Weight: " + weight + " kg",
+              size: "sm",
+              margin: "sm",
+            },
+            {
+              type: "separator",
               margin: "lg",
-              spacing: "sm",
-              contents: [
-                {
-                  type: "box",
-                  layout: "baseline",
-                  spacing: "sm",
-                  contents: [
-                    {
-                      type: "text",
-                      text: "ค่าดัชนีมวลกายของคุณ",
-                      color: "#000000",
-
-                      size: "lg",
-                    },
-                  ],
-                },
-              ],
             },
             {
-              type: "box",
-              layout: "vertical",
-              contents: [
-                {
-                  type: "box",
-                  layout: "vertical",
-                  contents: [
-                    {
-                      type: "text",
-                      text: "น้ำหนักของคุณ(Kg):",
-                      weight: "bold",
-                    },
-                    {
-                      type: "text",
-                      text: "weight" + " Kg ",
-                    },
-                  ],
-                },
-              ],
+              type: "text",
+              text: "BMI: " + bmi,
+              weight: "bold",
+              size: "xl",
+              align: "center",
+              margin: "lg",
+              color: "#00b900",
             },
             {
-              type: "box",
-              layout: "vertical",
-              contents: [
-                {
-                  type: "text",
-                  text: "ส่วนสูงของคุณ(Cm):",
-                  weight: "bold",
-                },
-                {
-                  type: "text",
-                  size: "sm",
-                  text: "height" + height * 100 + " Cm ",
-                },
-              ],
-            },
-            {
-              type: "box",
-              layout: "vertical",
-              contents: [
-                {
-                  type: "separator",
-                  margin: "xxl",
-                  color: "#000000",
-                },
-                {
-                  type: "text",
-                  text: "BMI:+bmi",
-                  gravity: "center",
-                  align: "center",
-                  size: "xxl",
-                  color: "#FF0000",
-                },
-                {
-                  type: "text",
-                  text: "result",
-                },
-              ],
+              type: "text",
+              text: result,
+              align: "center",
+              size: "sm",
+              margin: "md",
             },
           ],
         },
         footer: {
           type: "box",
           layout: "vertical",
-          spacing: "sm",
           contents: [
             {
               type: "button",
-              style: "link",
-              height: "sm",
               action: {
                 type: "uri",
                 label: "รายละเอียดเพิ่มเติม",
-                uri: "https://health.kapook.com/view86346.html",
+                uri: "https://samitivejchinatown.com/th/article/health/BMI-calculator",
               },
-              margin: "none",
-              color: "#000000",
-            },
-            {
-              type: "box",
-              layout: "vertical",
-              contents: [],
-              margin: "sm",
+              style: "primary",
+              color: "#1DB446",
             },
           ],
-
-          backgroundColor: "#FF8C00",
         },
       },
     };
-    //   agent.add(result);
-    let payload = new Payload(`LINE`, flexMessage, {
-      sendAsMessage: true,
-    });
+
+    let payload = new Payload("LINE", flexMessage, { sendAsMessage: true });
     agent.add(payload);
+    // agent.add(result);
   }
+
   let intentMap = new Map();
   intentMap.set("Default Welcome Intent", welcome);
   intentMap.set("Default Fallback Intent", fallback);
-
   intentMap.set("BMI - custom - yes", bodyMassIndex);
-
   agent.handleRequest(intentMap);
 });
 
 app.listen(port, () => {
-  console.log("Server is runnung at http://localhost:" + port);
+  console.log("Server is running at http://localhost:" + port);
 });
