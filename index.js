@@ -149,7 +149,7 @@ app.post("/webhook", (req, res) => {
   function calculateRectangleArea(agent) {
     let wide = agent.parameters.wide;
     let length = agent.parameters.length;
-    let result = width * length;
+    let result = wide * length;
     agent.add("พื้นที่สี่เหลี่ยม กว้าง" + wide + "ซม ความยาว" + length + "ซม result" + result);
     // agent.add(width, length, result);
   }
